@@ -75,7 +75,7 @@ void DataBase::DisconnectFromDataBase(QString nameDb)
 
 void DataBase::RequestToDB_allMovies()
 {
-    tableModel->setTable("film");
+    tableModel->setTable("film");   
     tableModel->select();
 
     if (tableModel->lastError().isValid()) {

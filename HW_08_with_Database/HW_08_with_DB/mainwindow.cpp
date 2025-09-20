@@ -122,12 +122,14 @@ void MainWindow::on_pb_request_clicked()
 
     if(ui->cb_category->currentText() == "Комедия")
     {
+        ui->tbView->setModel(nullptr);
         auto reqToDb = [this]{dataBase->RequestToDB(reqComedy);};
         QFuture<void> futRcvData = QtConcurrent::run(reqToDb);
     }
 
     if(ui->cb_category->currentText() == "Ужасы")
     {
+        ui->tbView->setModel(nullptr);
         auto reqToDb = [this]{dataBase->RequestToDB(reqHorror);};
         QFuture<void> futRcvData = QtConcurrent::run(reqToDb);
     }
@@ -142,10 +144,16 @@ void MainWindow::on_pb_request_clicked()
 
 void MainWindow::ScreenDataFromDB(QAbstractItemModel*tView, int typeRequest)
 {
+    int columns = 14;
     switch (typeRequest) {
 
-    case requestAllFilms:
+    case requestAllFilms:        
         ui->tbView->setModel(tView);
+        ui->tbView->hideColumn(0);
+        for(int i = 0; i < (columns - 3); ++i)
+        {
+            ui->tbView->hideColumn(i+3);
+        }
         break;
     case requestHorrors:
         ui->tbView->setModel(tView);
