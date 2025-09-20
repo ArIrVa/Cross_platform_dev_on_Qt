@@ -7,11 +7,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    portTime = 12345;
+    portMes = 13000;
     udpWorker = new UDPworker(this);
-    udpWorker->InitSocket();
+    udpMes = new UDPworker(this);
+    udpWorker->InitSocket(portTime);
+    udpMes->InitSocket(portMes);
 
     connect(udpWorker, &UDPworker::sig_sendTimeToGUI, this, &MainWindow::DisplayTime);
-    connect(udpWorker, &UDPworker::sig_sendUserText, this, &MainWindow::DisplayText);   // добавлен слот для приема пользовательской датаграммы
+    connect(udpMes, &UDPworker::sig_sendUserText, this, &MainWindow::DisplayText);   // добавлен слот для приема пользовательской датаграммы
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [&]{
@@ -70,9 +74,8 @@ void MainWindow::on_pb_stop_clicked()
 void MainWindow::on_pb_send_dg_clicked()
 {    
     QByteArray sendText;
-    QString t(ui->le_userText->text());
-    sendText.append("text");
+    QString t(ui->le_userText->text());    
     sendText.append(t.toUtf8());
-    udpWorker->SendDatagram(sendText);
+    udpMes->SendDatagram(sendText);
 }
 

@@ -30,9 +30,10 @@ private:
     Ui::MainWindow *ui;
     QTimer* timer;
     UDPworker* udpWorker;
+    UDPworker* udpMes;
     uint32_t counterPck = 0;
-
-
+    quint16 portTime{};
+    quint16 portMes{};
 
 };
 #endif // MAINWINDOW_H
