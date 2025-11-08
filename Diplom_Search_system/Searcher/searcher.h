@@ -38,14 +38,12 @@ private slots:
     void connectToDB();
     void on_pb_searchButton_clicked();
     void on_pb_close_clicked();
-
     void on_tabWidget_currentChanged(int index);
 
 private:
     Ui::Searcher *ui;
     QVector<QString> dataForConnect_;
     DataBase* db_;
-    QMessageBox* msg_;
-    // QSqlQueryModel* model;
+    QMessageBox* msg_;    
 };
 #endif // SEARCHER_H

@@ -126,7 +126,6 @@ void Indexer::processFile(const QString &absolutePath,const QSqlDatabase &db)
         frequency = wordFrequency[word];
         saveDocWord(db, idDoc, idWord, frequency);
     }
-
 }
 
 void Indexer::initializeDB(const QSqlDatabase &db) {
