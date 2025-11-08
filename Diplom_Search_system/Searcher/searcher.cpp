@@ -33,7 +33,6 @@ Searcher::Searcher(QWidget *parent)
 
     ui->chb_fullName->setText("Показать полный путь к файлу");
 
-
     ui->tblView_resultsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblView_resultsTable->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tblView_resultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -119,13 +118,11 @@ void Searcher::receiveStatusConnectToDB(bool status)
         msg_->exec();
 
         QTimer::singleShot(5000, this, SLOT(connectToDB()));
-
     }
 }
 
 void Searcher::on_pb_searchButton_clicked()
 {
-    ui->tblView_resultsTable->setModel(nullptr);
     QStringList wordList = cleanOfSymbols(ui->le_searchInput->text());
     if (wordList.isEmpty()) {
         QMessageBox::warning(this, "Предупреждение", "Вы ничего не ввели или введенное слово короче 3 символов!");
@@ -163,8 +160,8 @@ void Searcher::on_pb_searchButton_clicked()
                            "ORDER BY SUM(dwf.frequency) DESC\n"
                            "LIMIT 10;").arg(optionFileName).arg(quoteList.join(",")).arg(QString::number(quoteList.size()));
 
-
-    QSqlQueryModel* model = new QSqlQueryModel(db_);
+    auto uniq_model = std::make_unique<QSqlQueryModel>(db_);
+    QSqlQueryModel* model = uniq_model.release();
     model->setQuery(sqlQuery);
 
     if (model->lastError().isValid()) {
@@ -179,8 +176,8 @@ void Searcher::on_pb_searchButton_clicked()
         QStringList headers{"Файл", "Суммарная частота"};
         model->setHeaderData(0, Qt::Horizontal, headers.at(0));
         model->setHeaderData(1, Qt::Horizontal, headers.at(1));
-        ui->tblView_resultsTable->setModel(model);
-        ui->lb_result->clear();
+        ui->tblView_resultsTable->setModel(std::move(model));
+        ui->lb_result->clear();        
     }
 }
 
@@ -193,13 +190,15 @@ void Searcher::on_tabWidget_currentChanged(int index)
 {
     int tabIdx = ui->tabWidget->currentIndex();
     if (tabIdx == 1)
-    {        
+    {
         QString sqlQuery = QString("SELECT w.word, SUM(dwf.frequency)\n"
                                    "FROM doc_word_freq dwf\n"
                                    "INNER JOIN words_table w ON w.id = dwf.word_id\n"
                                    "GROUP BY w.word\n"
                                    "ORDER BY SUM(dwf.frequency) DESC;");
-        QSqlQueryModel* model = new QSqlQueryModel(db_);
+
+        auto uniq_model = std::make_unique<QSqlQueryModel>(db_);
+        QSqlQueryModel* model = uniq_model.release();
         model->setQuery(sqlQuery);
 
         if (model->lastError().isValid()) {

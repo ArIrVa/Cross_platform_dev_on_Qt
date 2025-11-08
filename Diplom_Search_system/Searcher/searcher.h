@@ -46,5 +46,6 @@ private:
     QVector<QString> dataForConnect_;
     DataBase* db_;
     QMessageBox* msg_;
+    // QSqlQueryModel* model;
 };
 #endif // SEARCHER_H

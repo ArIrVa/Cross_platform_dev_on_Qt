@@ -163,9 +163,10 @@ int Indexer::saveDocument(const QSqlDatabase &db, const QString &path, const QSt
     if (!isDoc){
         QString queryText = "INSERT INTO documents_table(path, file_name, content) VALUES(:path, :name, :content) RETURNING id";
         query.prepare(queryText);
-        query.bindValue(":path", "'" + path + "'");
-        query.bindValue(":name", "'" + nameFile + "'");
-        query.bindValue(":content", "'" + content + "'");
+
+        query.bindValue(":path",path);
+        query.bindValue(":name",nameFile);
+        query.bindValue(":content",content);
     }
     if (!query.exec()) {
         qWarning() << "Ошибка сохранения документа:" << query.lastError().text();
@@ -196,8 +197,8 @@ void Indexer::saveDocWord(const QSqlDatabase &db, const int &docId, const int &w
 
 int Indexer::findDocId(const QSqlDatabase &db, const QString &path) {
     QSqlQuery query(db);
-    query.prepare("SELECT id FROM documents_table WHERE path = :path");
-    query.bindValue(":path", "'" + path + "'");
+    query.prepare("SELECT id FROM documents_table WHERE path = :path");    
+    query.bindValue(":path",path);
 
     if (!query.exec())
     {
@@ -208,8 +209,8 @@ int Indexer::findDocId(const QSqlDatabase &db, const QString &path) {
 
 bool Indexer::IsExistsDoc(const QSqlDatabase &db, const QString &path) {
     QSqlQuery query(db);
-    query.prepare("SELECT EXISTS(SELECT id FROM documents_table WHERE path=:path)");
-    query.bindValue(":path", "'" + path + "'");
+    query.prepare("SELECT EXISTS(SELECT id FROM documents_table WHERE path=:path)");    
+    query.bindValue(":path",path);
 
     if (query.next()) {
         return query.value(0).toBool();
